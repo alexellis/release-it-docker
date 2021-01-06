@@ -19,10 +19,10 @@ RUN echo "Checking public key" && test -n "$PUBLIC_KEY"
 
 COPY --from=license-check /license-check /usr/bin/
 
-WORKDIR /go/src/github.com/alexellis/release-it
+WORKDIR /go/src/github.com/alexellis/release-it-docker/
 COPY . .
 
-RUN license-check -path /go/src/github.com/alexellis/release-it-docker/ --verbose=false "Alex Ellis" "alexellis Author(s)"
+RUN license-check -path /go/src/github.com/alexellis/release-it-docker/ --verbose=false "Alex Ellis"
 RUN gofmt -l -d $(find . -type f -name '*.go' -not -path "./vendor/*")
 RUN CGO_ENABLED=${CGO_ENABLED} GOOS=${TARGETOS} GOARCH=${TARGETARCH} go test -v ./...
 
