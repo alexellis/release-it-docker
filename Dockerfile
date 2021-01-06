@@ -19,17 +19,17 @@ RUN echo "Checking public key" && test -n "$PUBLIC_KEY"
 
 COPY --from=license-check /license-check /usr/bin/
 
-WORKDIR /go/src/github.com/alexellis/release-it-docker/
+WORKDIR /go/src/github.com/alexellis/release-it/
 COPY . .
 
-RUN license-check -path /go/src/github.com/alexellis/release-it-docker/ --verbose=false "Alex Ellis"
+RUN license-check -path /go/src/github.com/alexellis/release-it/ --verbose=false "Alex Ellis"
 RUN gofmt -l -d $(find . -type f -name '*.go' -not -path "./vendor/*")
 RUN CGO_ENABLED=${CGO_ENABLED} GOOS=${TARGETOS} GOARCH=${TARGETARCH} go test -v ./...
 
 RUN echo ${GIT_COMMIT} ${VERSION}
 RUN GOOS=${TARGETOS} GOARCH=${TARGETARCH} CGO_ENABLED=${CGO_ENABLED} go build \
         -mod=vendor \
-        --ldflags "-s -w -X 'github.com/alexellis/release-it-docker/version.GitCommit=${GIT_COMMIT}' -X 'main.PublicKey=${PUBLIC_KEY}' -X 'github.com/alexellis/release-it-docker/version.Version=${VERSION}'" \
+        --ldflags "-s -w -X 'github.com/alexellis/release-it/version.GitCommit=${GIT_COMMIT}' -X 'main.PublicKey=${PUBLIC_KEY}' -X 'github.com/alexellis/release-it/version.Version=${VERSION}'" \
         -a -installsuffix cgo -o release-it
 
 FROM --platform=${TARGETPLATFORM:-linux/amd64} alpine:3.12 as ship
@@ -45,7 +45,7 @@ WORKDIR /home/app
 ENV http_proxy      ""
 ENV https_proxy     ""
 
-COPY --from=build /go/src/github.com/alexellis/release-it-docker/release-it    /usr/bin/
+COPY --from=build /go/src/github.com/alexellis/release-it/release-it    /usr/bin/
 RUN chown -R app:app ./
 
 USER app
